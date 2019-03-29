@@ -6,23 +6,23 @@ exports.contacts_get_all = (req, res, next) => {
     .select('fname lname email number _id')
     .exec()
     .then(docs => {
-        const response = {
-            count: docs.length,
-            contacts: docs.map(doc => {
-                return{
-                    fname: doc.fname,
-                    lname: doc.lname,
-                    email: doc.email,
-                    number: doc.number,
-                    _id: doc._id,
-                    request:{
-                        type: 'GET',
-                        url: 'http://localhost:3000/addressBook/' + doc._id
-                    } 
-                }
-            })
-        };
-        res.status(200).json(response);
+        // const response = { 
+        //     // count: docs.length,
+        //     contacts: docs.map(doc => {
+        //         return{
+        //             fname: doc.fname,
+        //             lname: doc.lname,
+        //             email: doc.email,
+        //             number: doc.number,
+        //             _id: doc._id,
+        //             request:{
+        //                 type: 'GET',
+        //                 url: 'http://localhost:3000/addressBook/' + doc._id
+        //             } 
+        //         }
+        //     })
+        // };
+        res.status(200).json(docs);
     })
     .catch(err => {
         console.log(err);
@@ -31,6 +31,37 @@ exports.contacts_get_all = (req, res, next) => {
         })
     });
 }
+
+// exports.contacts_get_byid = (req, res, next) => {
+//     Contact.find()
+//     .select('fname lname email number _id')
+//     .exec()
+//     .then(docs => {
+//         const response = {
+//             count: docs.length,
+//             contacts: docs.map(doc => {
+//                 return{
+//                     fname: doc.fname,
+//                     lname: doc.lname,
+//                     email: doc.email,
+//                     number: doc.number,
+//                     _id: doc._id,
+//                     request:{
+//                         type: 'GET',
+//                         url: 'http://localhost:3000/addressBook/id' + doc._id
+//                     } 
+//                 }
+//             })
+//         };
+//         res.status(200).json(response);
+//     })
+//     .catch(err => {
+//         console.log(err);
+//         res.status(500).json({
+//             error: err
+//         })
+//     });
+// }
 
 exports.contact_create = (req, res, next) => {
     const contact = new Contact({

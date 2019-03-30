@@ -1,4 +1,6 @@
 'use strict';
+
+//exporting datas and functions from routes and models folder
 module.exports = (app) =>{
     let contactModel = require('./models/contact');
 

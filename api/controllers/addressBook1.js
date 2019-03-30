@@ -1,34 +1,46 @@
-const Contact = require('../models/contact');
+const Contact = require('../models/contact').default;
 const mongoose = require('mongoose');
 
 const contactService = require('../services/contact_services');
 
+/**
+ * function for getting all the contacts from the database
+ * 
+ * @param request: catch will take it
+ * @param response : then will ctach it
+ */
 exports.list = function (resquest, response) {
     const resolve = (docs) => {
 
-        const resp = {
-            count: docs.length,
-            contacts: docs.map(doc => {
-                return{
-                    fname: doc.fname,
-                    lname: doc.lname,
-                    email: doc.email,
-                    number: doc.number,
-                    _id: doc._id,
-                    request:{
-                        type: 'GET',
-                        url: 'http://localhost:3000/addressBook/' + doc._id
-                    } 
-                }
-            })
-        };
+        // const resp = {
+        //     count: docs.length,
+        //     contacts: docs.map(doc => {
+        //         return{
+        //             fname: doc.fname,
+        //             lname: doc.lname,
+        //             email: doc.email,
+        //             number: doc.number,
+        //             _id: doc._id,
+        //             request:{
+        //                 type: 'GET',
+        //                 url: 'http://localhost:3000/addressBook/' + doc._id
+        //             } 
+        //         }
+        //     })
+        // };
 
         response.status(200);
-        response.json(resp);
+        response.json(docs);
     };
     contactService.search({}).then(resolve)
 };
 
+/**
+ * function to post a data to the database
+ * 
+ * @param request: catch will take it
+ * @param response : then will ctach it
+ */
 exports.post = function(request,response) {
     const resolve = (result) => {
         console.log(result);
@@ -57,6 +69,12 @@ exports.post = function(request,response) {
     contactService.save(new_contact).then(resolve);
 };
 
+/**
+ * function to get a specific data from the database
+ * 
+ * @param request: catch will take it
+ * @param response : then will ctach it
+ */
 exports.get = function(request,response) {
 
     console.log(request.params.contactId);
@@ -72,7 +90,12 @@ exports.get = function(request,response) {
     contactService.get(request.params.contactId).then(resolve);
 };
 
-
+/**
+ * function to update an data to the database
+ * 
+ * @param request: catch will take it
+ * @param response : then will ctach it
+ */
 exports.put = function(request,response) {
 
     console.log(request.params.contactId);
@@ -93,6 +116,12 @@ exports.put = function(request,response) {
     contactService.update(request.params.contactId,updateOps).then(resolve);
 };
 
+/**
+ * function to delete a data in the database
+ * 
+ * @param request: catch will take it
+ * @param response : then will ctach it
+ */
 exports.delete = function(request,response) {
 
     console.log(request.params.contactId);
@@ -109,57 +138,3 @@ exports.delete = function(request,response) {
     };
     contactService.deleteOne(request.params.contactId).then(resolve)
 };
-
-
-
-
-
-
-
-
-exports.to_update_contact = (req, res, next) => {
-    const id = req.params.contactId;
-    const updateOps = {};
-    for (const ops of req.body) {
-        updateOps[ops.propName] = ops.value;
-    }
-    Contact.update({_id: id}, {$set: updateOps})
-    .exec()
-    .then(result => {
-        res.status(200).json({
-            message: 'Contact updated',
-            request: {
-                type: 'GET',
-                url: 'http://localhost:3000/addressBook/' + id
-            }
-        });
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
-        });
-    });
-}
-
-exports.to_delete_contact = (req, res, next) => {
-    const id = req.params.contactId;
-    Contact.deleteOne({_id: id})
-    .exec()
-    .then(result => {
-        res.status(200).json({
-            message: 'Contact deleted',
-            request:{
-                type: 'POST',
-                url: 'http://localhost:3000/addressBook/',
-                body: { fname: 'String', lname: 'String', email: 'String', number: 'Number'}
-            }
-        });
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            error: err
-        });
-    });
-}
